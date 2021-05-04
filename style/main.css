@@ -1,0 +1,139 @@
+body {
+    margin: 0;
+}
+
+@font-face {
+    font-family: 'Lexend Deca Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: url('../fonts/LexendDecaRegular.woff') format('woff');
+    }
+
+#content-box {
+    position: relative;
+    display: block;
+    width: 800px;
+    height: 480px;
+    background-color: rgb(50, 50, 50);
+    margin: 0;
+    overflow: hidden;
+}
+
+#album-art-bg {
+    position: absolute;
+    display: block;
+    width: 110%;
+    top: -50%;
+    left: -45px;
+    bottom: 0;
+    filter: blur(10px);
+    opacity: 0.4;
+}
+
+#album-cover {
+    position: relative;
+    display: block;
+    perspective: 40rem;
+    width: 360px;
+    height: 360px;
+    margin: 0 auto;
+    top: 15px;
+    transition: transform calc(0.707s / 4);
+    z-index: 30;
+}
+
+#album-cover:active {
+    transform: scale(0.975);
+}
+
+#album-cover.animate-change #album-cover-body {
+    transform-style: preserve-3d;
+    transition: 0.707s transform;
+    transform: rotateY(-180deg);
+}
+
+#album-cover-body {
+    transform-style: preserve-3d;
+    transition: 0.707s transform;
+}
+
+#album-cover-body div {
+    width: 360px;
+    height: 360px;
+    background-size: contain;
+    -webkit-backface-visibility: hidden;
+}
+
+#album-cover-body #cover-front {
+    background-image: url("../img/art_not_available.png");
+}
+
+#cover-back {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    transform: rotateY(-180deg);
+}
+ 
+#track-info {
+    position: relative;
+    width: 100%;
+    z-index: 10;
+}
+
+#track-info h4, h5 {
+    font-family: 'Lexend Deca Regular', Arial, Helvetica, sans-serif;
+    color: white;
+    text-align: center;
+    margin: 24px 0 0px;
+}
+
+#track-info h4 {
+    font-size: 16pt;
+}
+
+#artist-album {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#artist-album .separator {
+    display: inline-block;
+    width: 10px;
+    text-align: center;
+    color: white;
+}
+
+#artist-album h5 {
+    display: inline-block;
+    margin: 0;
+}
+
+#seek-bar {
+    width: 400px;
+    display: flex;
+    align-items: center;
+    margin: 10px auto 0;
+    color: white;
+    font-family: 'Lexend Deca Regular', Arial, Helvetica, sans-serif;
+}
+
+#seek-bar p {
+    width: 32px;
+    margin: 0;
+}
+
+#seek-bar #bar-wrapper {
+    width: 328px;
+    margin: 0 10px 0;
+    height: 10px;
+    border: 1px solid white;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#seek-bar #bar-actual {
+    background-color: white;
+    width: 0%;
+    height: 100%;
+}

@@ -1,0 +1,27 @@
+{
+    "name": "roon-extension-test",
+    "version": "1.0.0",
+    "description": "Roon Extension to test using Roon API",
+    "main": "src/index.js",
+    "author": "Catalin Mustata",
+    "license": "Apache-2.0",
+    "private": true,
+    "scripts": {
+        "build": "node_modules/.bin/parcel build index.html",
+        "dev": "node_modules/.bin/parcel serve index.html"
+    },
+    "dependencies": {
+        "jquery": "^3.6.0",
+        "node-roon-api": "github:roonlabs/node-roon-api",
+        "node-roon-api-image": "github:roonlabs/node-roon-api-image",
+        "node-roon-api-settings": "github:roonlabs/node-roon-api-settings",
+        "node-roon-api-status": "github:roonlabs/node-roon-api-status",
+        "node-roon-api-transport": "github:roonlabs/node-roon-api-transport"
+    },
+    "devDependencies": {
+        "@types/jquery": "^3.5.5",
+        "@types/node": "^15.0.1",
+        "parcel-bundler": "^1.10.0",
+        "typescript": "^3.4.3"
+    }
+}
