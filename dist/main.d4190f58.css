@@ -6,7 +6,7 @@ body {
     font-family: 'Lexend Deca Regular';
     font-style: normal;
     font-weight: normal;
-    src: url('/LexendDecaRegular.153acf91.woff') format('woff');
+    src: url('LexendDecaRegular.153acf91.woff') format('woff');
     }
 
 #content-box {
@@ -65,7 +65,7 @@ body {
 }
 
 #album-cover-body #cover-front {
-    background-image: url("/art_not_available.96db6303.png");
+    background-image: url("art_not_available.96db6303.png");
 }
 
 #cover-back {
@@ -138,4 +138,4 @@ body {
     height: 100%;
 }
 
-/*# sourceMappingURL=/main.d4190f58.css.map */
+/*# sourceMappingURL=main.d4190f58.css.map */
