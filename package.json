@@ -6,9 +6,13 @@
     "author": "Catalin Mustata",
     "license": "Apache-2.0",
     "private": true,
+    "externals": {
+        "./config.js": false
+    },
     "scripts": {
         "build": "node_modules/.bin/parcel build index.html",
-        "dev": "node_modules/.bin/parcel serve index.html"
+        "dev": "node_modules/.bin/parcel serve index.html",
+        "build-static": "cp config.js dist/config.js && ./node_modules/.bin/parcel index.html --no-hmr --public-url ./"
     },
     "dependencies": {
         "jquery": "^3.6.0",
@@ -22,6 +26,7 @@
         "@types/jquery": "^3.5.5",
         "@types/node": "^15.0.1",
         "parcel-bundler": "^1.10.0",
+        "parcel-plugin-html-externals": "^0.3.0",
         "typescript": "^3.4.3"
     }
 }
