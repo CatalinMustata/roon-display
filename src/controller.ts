@@ -16,6 +16,8 @@ const AlbumImageConfig = {
     format: "image/jpeg"
 }
 
+const LoadingText = [".", "..", "..."]
+
 const targetZone = "Node"
 
 const FaceFront = "front"
@@ -28,12 +30,33 @@ export default class Controller {
 
     private currentFace = FaceFront
 
+    private loadingAnimator = null
+
     public setCore(core: RoonCore | null) {
         this.core = core
+
+        // if no core, show connecting screen and return
+        if (this.setConnectingScreen(!core)) return
 
         core.services.RoonApiTransport.subscribe_zones((res, payload) => {
             this.zonesUpdated(payload)
         })
+    }
+
+    private setConnectingScreen(visible: boolean): boolean {
+        if (visible) {
+            $("#connecting-content-box").fadeIn(300)
+            let index = 0
+            this.loadingAnimator = setInterval(() => {
+                $("#connecting-content-box h1").attr("data-after", LoadingText[index])
+                index = (index + 1) % 3
+            }, 1000)
+        } else {
+            $("#connecting-content-box").fadeOut(300)
+            clearInterval(this.loadingAnimator)
+        }
+
+        return visible
     }
 
     private zonesUpdated(payload) {

@@ -9,8 +9,8 @@ body {
     src: url('../fonts/LexendDecaRegular.woff') format('woff');
     }
 
-#content-box {
-    position: relative;
+#main-content-box, #connecting-content-box {
+    position: absolute;
     display: block;
     width: 800px;
     height: 480px;
@@ -136,4 +136,27 @@ body {
     background-color: white;
     width: 0%;
     height: 100%;
+}
+
+/* CONNECTING SCREEN */
+
+#connecting-content-box {
+    z-index: 100;
+}
+
+#connecting-content-box #roon-logo {
+    display: block;
+    width: 200px;
+    margin: 72px auto 0;
+}
+
+#connecting-content-box h1 {
+    color: white;
+    width: 440px;
+    margin: 0 auto;
+    font-family: 'Lexend Deca Regular', Arial, Helvetica, sans-serif;
+}
+
+#connecting-content-box h1::after {
+    content: attr(data-after);
 }

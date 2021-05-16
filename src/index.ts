@@ -10,6 +10,7 @@ import RoonApiImage from "node-roon-api-image"
 import Controller from "./controller"
 
 const controller = new Controller()
+controller.setCore(null) // init with no core
 
 const roonConnected = (core) => {
     console.log(`Connected to ${core.display_name} - ${core.display_version}`);
@@ -38,10 +39,15 @@ roon.init_services({
     required_services: [RoonApiTransport, RoonApiImage]
 })
 
-$(() => {
+function connect() {
     console.log("Will connect to Roon");
     roon.ws_connect({
-        host: "192.168.0.105",
-        port: 9100
+        host: displayConfig.coreIP,
+        port: displayConfig.corePort,
+        onclose: () => setTimeout(connect, 3000)
     })
-})
+}
+
+// start connection
+connect()
+
