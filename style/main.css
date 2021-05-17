@@ -76,6 +76,7 @@ body {
 #album-cover-body {
     transform-style: preserve-3d;
     transition: 0.707s transform;
+    box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.38);
 }
 
 #album-cover-body div {
