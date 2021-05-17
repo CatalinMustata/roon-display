@@ -18,19 +18,26 @@ const AlbumImageConfig = {
 
 const LoadingText = [".", "..", "..."]
 
-const targetZone = "Node"
-
 const FaceFront = "front"
 const FaceBack = "back"
 
 export default class Controller {
 
     private core: RoonCore
+    private targetZone: string
     private zone: Zone
 
     private currentFace = FaceFront
 
     private loadingAnimator = null
+
+    constructor(targetZone: string, enableDithering: boolean) {
+        this.targetZone = targetZone
+
+        if (enableDithering) {
+            $("#noise-overlay").show()
+        }
+    }
 
     public setCore(core: RoonCore | null) {
         this.core = core
@@ -63,7 +70,7 @@ export default class Controller {
         const updatedZones = payload.zones || payload.zones_added || payload.zones_changed
         const zoneSeekChange = payload.zones_seek_changed
         if (updatedZones) {
-            const zone = updatedZones.find(zone => zone.display_name == targetZone)
+            const zone = updatedZones.find(zone => zone.display_name == this.targetZone)
 
             if (!zone) {
                 console.log("Failed to find zone. Check config")

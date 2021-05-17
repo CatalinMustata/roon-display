@@ -9,7 +9,7 @@ import RoonApiImage from "node-roon-api-image"
 
 import Controller from "./controller"
 
-const controller = new Controller()
+const controller = new Controller(displayConfig.targetZone, displayConfig.graphics.enableDithering)
 controller.setCore(null) // init with no core
 
 const roonConnected = (core) => {
