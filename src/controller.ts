@@ -227,7 +227,10 @@ export default class Controller {
                 // start timer to transition to Display Off state
                 this.displayOffTimer = setTimeout(() => {
                     console.log("Turning off display")
+
+                    this.uiState = UIState.DisplayOff
                 }, Controller.DISPLAY_OFF_TIMEOUT)
+
             }, Controller.PAUSE_TIMEOUT)
         } else if (this.uiState === UIState.NotPlayingTimeout) {
             this.uiState = UIState.Playing
@@ -240,7 +243,7 @@ export default class Controller {
 
             this.pauseTimer = null
             this.displayOffTimer = null
-        } else if (this.uiState === UIState.NotPlaying) {
+        } else if (this.uiState === UIState.NotPlaying || this.uiState == UIState.DisplayOffTimeout) {
             console.log("Exiting Paused state")
 
             this.uiState = UIState.Playing
