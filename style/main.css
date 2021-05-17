@@ -19,6 +19,14 @@ body {
     overflow: hidden;
 }
 
+#clock-small {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin: 0;
+    font-size: 24px;
+}
+
 #album-art-bg {
     position: absolute;
     display: block;
@@ -74,6 +82,7 @@ body {
     width: 360px;
     height: 360px;
     background-size: contain;
+    backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
 
@@ -154,7 +163,7 @@ body {
 /* CONNECTING SCREEN */
 
 #connecting-content-box {
-    z-index: 100;
+    z-index: 300;
 }
 
 #connecting-content-box #roon-logo {
@@ -172,4 +181,28 @@ body {
 
 #connecting-content-box h1::after {
     content: attr(data-after);
+}
+
+/* PAUSED SCREEN */
+
+#paused-content-box {
+    display: none;
+    position: absolute;
+    top: 0; left: 0;
+    width: 800px;
+    height: 480px;
+    background-color: black;
+    z-index: 200;
+}
+
+#paused-content-box h1 {
+    font-family: 'Lexend Deca Regular', Arial, Helvetica, sans-serif;
+    font-size: 144px;
+    text-align: center;
+    color: white;
+}
+
+#paused-content-box h5 {
+    font-family: 'Lexend Deca Regular', Arial, Helvetica, sans-serif;
+    font-size: 24px;
 }
