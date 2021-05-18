@@ -38,8 +38,8 @@ export default class Controller {
     private static readonly FaceFront = "front"
     private static readonly FaceBack = "back"
 
-    private static readonly PAUSE_TIMEOUT = 10000
-    private static readonly DISPLAY_OFF_TIMEOUT = 30000
+    private static readonly PAUSE_TIMEOUT = 30000
+    private static readonly DISPLAY_OFF_TIMEOUT = 60000
     private static readonly CLOCK_UPDATE = 60000
     private static readonly ANIMATION_DURATION = 300
 
