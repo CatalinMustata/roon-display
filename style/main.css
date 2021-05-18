@@ -45,8 +45,7 @@ body {
     width: 800px;
     height: 480px;
     background-color: rgb(60, 60, 60);
-    mix-blend-mode: overlay;
-    opacity: 0.7;
+    mix-blend-mode: hard-light;
     mask: url("../img/noise.svg");
     -webkit-mask: url("../img/noise.svg");
 }
