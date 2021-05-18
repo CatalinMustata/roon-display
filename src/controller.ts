@@ -149,14 +149,12 @@ export default class Controller {
     }
 
     private updateTrack(nowPlaying) {
-        const artistInfo = nowPlaying.three_line
+        const artistInfo = nowPlaying.two_line
 
         $("#song-name").text(artistInfo.line1)
-        $("#artist").text(artistInfo.line2 || "")
-        $("#album").text(artistInfo.line3 || "")
+        $("#artist-album").text(artistInfo.line2 || "")
 
-        const pauseText = `${artistInfo.line1} - ${artistInfo.line2} / ${artistInfo.line3}`
-        $("#currently-paused").text(pauseText)
+        $("#currently-paused").text(nowPlaying.one_line.line1)
 
         const { mins, seconds } = this.computeTime(nowPlaying.length)
 

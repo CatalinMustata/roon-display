@@ -111,24 +111,11 @@ body {
 }
 
 #track-info h4 {
-    font-size: 16pt;
+    font-size: 28px;
 }
 
 #artist-album {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#artist-album .separator {
-    display: inline-block;
-    width: 10px;
-    text-align: center;
-    color: white;
-}
-
-#artist-album h5 {
-    display: inline-block;
+    font-size: 16px;
     margin: 0;
 }
 
