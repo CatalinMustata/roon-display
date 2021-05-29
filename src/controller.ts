@@ -1,6 +1,7 @@
 import Zone from "node-roon-api-transport"
 import RoonApiImage from "node-roon-api-image"
 import RoonApiTransport from "node-roon-api-transport"
+import BacklightService from "./backlightService"
 
 type RoonCore = {
     services: {
@@ -49,6 +50,8 @@ export default class Controller {
 
     private currentFace = Controller.FaceFront
 
+    private backlightService = null
+
     // TIMERS
     private loadingAnimator = null
     private pauseTimer = null
@@ -57,11 +60,15 @@ export default class Controller {
     // UI STATE
     private uiState = UIState.NotPlaying
 
-    constructor(targetZone: string, enableDithering: boolean) {
+    constructor(targetZone: string, enableDithering: boolean, backlightServiceHost: string) {
         this.targetZone = targetZone
 
         if (enableDithering) {
             $("#noise-overlay").show()
+        }
+
+        if (backlightServiceHost) {
+            this.backlightService = new BacklightService(backlightServiceHost)
         }
 
         // update clock displays
@@ -133,6 +140,7 @@ export default class Controller {
             return
         }
 
+        // update UI based on the new zone state (ie: playing, paused etc.)
         this.updateZoneState(zone.state)
 
         const nowPlaying = zone.now_playing
@@ -227,6 +235,9 @@ export default class Controller {
                     console.log("Turning off display")
 
                     this.uiState = UIState.DisplayOff
+
+                    this.backlightService && this.backlightService.setDisplay(false)
+
                 }, Controller.DISPLAY_OFF_TIMEOUT)
 
             }, Controller.PAUSE_TIMEOUT)
@@ -251,6 +262,7 @@ export default class Controller {
 
             this.uiState = UIState.Playing
             this.setPausedScreen(false)
+            this.backlightService && this.backlightService.setDisplay(true)
         }
     }
 
