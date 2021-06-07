@@ -8,18 +8,27 @@ import RoonApiTransport from "node-roon-api-transport"
 import RoonApiImage from "node-roon-api-image"
 
 import Controller from "./controller"
+import { LogService } from "./logService";
+import DisplayConfig from "./objects/DisplayConfig";
 
-const controller = new Controller(displayConfig.targetZone, displayConfig.graphics.enableDithering, displayConfig.backlightService)
+// @ts-ignore -- this is supposed to run in a browser (which can't load configs from disk)
+// so in this case the config will be in a separate, non-built, file loaded by index.html
+// we will assume this will always be here or else index.html is broken
+const config = <DisplayConfig>displayConfig
+
+const logger = new LogService(config.logging.logServiceHost, config.logging.logServicePort, "Roon-Display")
+
+const controller = new Controller(config.targetZone, config.graphics.enableDithering, config.backlightService, logger)
 controller.setCore(null) // init with no core
 
 const roonConnected = (core) => {
-    console.log(`Connected to ${core.display_name} - ${core.display_version}`);
+    logger.sendLog(`Connected to ${core.display_name} - ${core.display_version}`);
 
     controller.setCore(core)
 }
 
 const roonCoreUnpaired = () => {
-    console.log("Core Unpaired")
+    logger.sendLog("Core Unpaired")
     controller.setCore(null)
 }
 
@@ -40,10 +49,10 @@ roon.init_services({
 })
 
 function connect() {
-    console.log("Will connect to Roon");
+    logger.sendLog("Will connect to Roon");
     roon.ws_connect({
-        host: displayConfig.coreIP,
-        port: displayConfig.corePort,
+        host: config.coreIP,
+        port: config.corePort,
         onclose: () => setTimeout(connect, 3000)
     })
 }

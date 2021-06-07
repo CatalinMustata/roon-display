@@ -2,8 +2,11 @@ import Zone from "node-roon-api-transport"
 import RoonApiImage from "node-roon-api-image"
 import RoonApiTransport from "node-roon-api-transport"
 import BacklightService from "./backlightService"
+import { LogService } from "./logService"
 
 type RoonCore = {
+    display_name: string,
+    display_version: string,
     services: {
         RoonApiImage: RoonApiImage
         RoonApiTransport: RoonApiTransport
@@ -60,8 +63,12 @@ export default class Controller {
     // UI STATE
     private uiState = UIState.NotPlaying
 
-    constructor(targetZone: string, enableDithering: boolean, backlightServiceHost: string) {
+    constructor(targetZone: string, enableDithering: boolean, backlightServiceHost: string, private readonly logger: LogService) {
         this.targetZone = targetZone
+
+        this.logger = logger
+
+        this.logger.sendLog("Starting up")
 
         if (enableDithering) {
             $("#noise-overlay").show()
@@ -83,6 +90,9 @@ export default class Controller {
 
     public setCore(core: RoonCore | null) {
         this.core = core
+
+        console.log(core)
+        core ? this.logger.sendLog(`Using core: ${core.display_name} (${core.display_version})`) : this.logger.sendLog("Not using any core")
 
         // if no core, show connecting screen and return
         if (this.setConnectingScreen(!core)) return
@@ -113,10 +123,11 @@ export default class Controller {
         const updatedZones = payload.zones || payload.zones_added || payload.zones_changed
         const zoneSeekChange = payload.zones_seek_changed
         if (updatedZones) {
+            this.logger.sendLog("Received zone updated event")
             const zone = updatedZones.find(zone => zone.display_name == this.targetZone)
 
             if (!zone) {
-                console.log("Failed to find zone. Check config")
+                this.logger.sendLog("Failed to find zone. Check config")
             }
 
             this.updateZoneInfo(zone)
@@ -124,7 +135,7 @@ export default class Controller {
             const zone = zoneSeekChange.find(zone => zone.zone_id = this.zone.zone_id)
 
             if (!zone) {
-                console.log("Failed to find zone. Check config")
+                this.logger.sendLog("Failed to find zone. Check config")
             }
 
             this.updateSeek(zone.seek_position, this.zone.now_playing.length)
@@ -136,7 +147,7 @@ export default class Controller {
         this.zone = zone
 
         if (!zone) {
-            console.log("Should clear display")
+            this.logger.sendLog("No zone. Should clear display")
             return
         }
 
@@ -157,10 +168,11 @@ export default class Controller {
     }
 
     private updateTrack(nowPlaying) {
-        const artistInfo = nowPlaying.two_line
+
+        const artistInfo = nowPlaying.three_line
 
         $("#song-name").text(artistInfo.line1)
-        $("#artist-album").text(artistInfo.line2 || "")
+        $("#artist-album").text(`${artistInfo.line2} on '${artistInfo.line3}'`)
 
         $("#currently-paused").text(nowPlaying.one_line.line1)
 
@@ -217,53 +229,87 @@ export default class Controller {
     }
 
     private updateZoneState(state: ZoneState) {
-        if (state == ZoneState.Paused || state == ZoneState.Stopped) {
-            this.uiState = UIState.NotPlayingTimeout
+        this.logger.sendLog(`Received new target zone state: ${JSON.stringify(state)}`)
 
-            console.log("Will transition to Paused state")
-
-            // start timer to transition to Paused UI state
-            this.pauseTimer = setTimeout(() => {
-                console.log("Entering Paused State")
-                this.setPausedScreen(true)
-
-
-                this.uiState = UIState.DisplayOffTimeout
-
-                // start timer to transition to Display Off state
-                this.displayOffTimer = setTimeout(() => {
-                    console.log("Turning off display")
-
-                    this.uiState = UIState.DisplayOff
-
-                    this.backlightService && this.backlightService.setDisplay(false)
-
-                }, Controller.DISPLAY_OFF_TIMEOUT)
-
-            }, Controller.PAUSE_TIMEOUT)
-        } else if (this.uiState === UIState.NotPlayingTimeout) {
-            this.uiState = UIState.Playing
-
-            console.log("Cancel transition to Paused state")
-
-            // cancel timers
-            clearTimeout(this.pauseTimer)
-            this.displayOffTimer && clearTimeout(this.displayOffTimer)
-
-            this.pauseTimer = null
-            this.displayOffTimer = null
-        } else if (this.uiState === UIState.NotPlaying || this.uiState == UIState.DisplayOffTimeout) {
-            console.log("Exiting Paused state")
-
-            this.uiState = UIState.Playing
-            this.setPausedScreen(false)
-        } else if (this.uiState === UIState.DisplayOff) {
-            console.log("Turning display back on")
-
-            this.uiState = UIState.Playing
-            this.setPausedScreen(false)
-            this.backlightService && this.backlightService.setDisplay(true)
+        // ignorable state transitions
+        if (state === ZoneState.Loading) {
+            this.logger.sendLog(`State is loading. Ignoring`)
+            return
+        } else if (state === ZoneState.Playing && this.uiState === UIState.Playing) {
+            this.logger.sendLog("Still playing. Will ignore.")
+            return
+        } else if ((state == ZoneState.Paused || state == ZoneState.Stopped) && this.uiState !== UIState.Playing) {
+            this.logger.sendLog("Player is stopped/paused and UI is not playing. Ignoring")
+            return
         }
+
+        // actionable state transitions
+        if (state == ZoneState.Paused || state == ZoneState.Stopped) {
+            this.transitionToPausedState()
+            // from here on down, `state` is `Playing`
+        } else if (this.uiState === UIState.NotPlayingTimeout) {
+            this.cancelTransitionToPausedState()
+        } else if (this.uiState === UIState.NotPlaying || this.uiState === UIState.DisplayOffTimeout) {
+            this.cancelTransitionToOffState()
+        } else if (this.uiState === UIState.DisplayOff) {
+            this.transitionToPlayingState()
+        } else {
+            this.logger.sendLog(`Unknown state transition from ${this.uiState} to ${state}`)
+        }
+    }
+
+    private transitionToPausedState() {
+        this.uiState = UIState.NotPlayingTimeout
+
+        this.logger.sendLog("Will transition to Paused state")
+
+        // start timer to transition to Paused UI state
+        this.pauseTimer = setTimeout(() => {
+            this.logger.sendLog("Entering Paused State. Will turn off display")
+            this.setPausedScreen(true)
+
+
+            this.uiState = UIState.DisplayOffTimeout
+
+            // start timer to transition to Display Off state
+            this.displayOffTimer = setTimeout(() => {
+                this.logger.sendLog("Turning off display")
+
+                this.uiState = UIState.DisplayOff
+
+                this.backlightService && this.backlightService.setDisplay(false)
+
+            }, Controller.DISPLAY_OFF_TIMEOUT)
+
+        }, Controller.PAUSE_TIMEOUT)
+    }
+
+    private cancelTransitionToPausedState() {
+        this.uiState = UIState.Playing
+
+        this.logger.sendLog("Cancel transition to Paused state")
+
+        // cancel timers
+        clearTimeout(this.pauseTimer)
+        this.displayOffTimer && clearTimeout(this.displayOffTimer)
+
+        this.pauseTimer = null
+        this.displayOffTimer = null
+    }
+
+    private cancelTransitionToOffState() {
+        this.logger.sendLog("Exiting Paused state")
+
+        this.uiState = UIState.Playing
+        this.setPausedScreen(false)
+    }
+
+    private transitionToPlayingState() {
+        this.logger.sendLog("Turning display back on")
+
+        this.uiState = UIState.Playing
+        this.setPausedScreen(false)
+        this.backlightService && this.backlightService.setDisplay(true)
     }
 
     private setPausedScreen(visible: boolean) {
