@@ -1,0 +1,14 @@
+[Unit]
+Description=Roon Display Service
+After=network.target logcollector.target
+
+[Service]
+ExecStart=startx -- -nocursor
+WorkingDirectory=/home/pi
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
