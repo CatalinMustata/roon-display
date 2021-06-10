@@ -34,6 +34,7 @@ const roonConnected = (core) => {
 const roonCoreUnpaired = () => {
     logger.sendLog("Core Unpaired")
     controller.setCore(null)
+    reconnectTimer = setInterval(connect, 3000)
 }
 
 
@@ -58,6 +59,7 @@ function connect() {
         host: config.coreIP,
         port: config.corePort,
         onclose: () => {
+            logger.sendLog("Connection closed")
             // attempt to reconnect every 3s
             reconnectTimer = setInterval(connect, 3000)
         }
