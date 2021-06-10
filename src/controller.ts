@@ -158,7 +158,7 @@ export default class Controller {
 
         if (!nowPlaying) return
 
-        if (!prevZone || prevZone.now_playing.image_key != nowPlaying.image_key) {
+        if (!prevZone || !(prevZone.now_playing) || !prevZone.now_playing.image_key != nowPlaying.image_key) {
             // update image and then track info for consistency
             this.updateImage(nowPlaying)
         } else {
