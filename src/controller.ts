@@ -238,6 +238,10 @@ export default class Controller {
         } else if (state === ZoneState.Playing && this.uiState === UIState.Playing) {
             this.logger.sendLog("Still playing. Will ignore.")
             return
+        } else if ((state == ZoneState.Paused || state == ZoneState.Stopped)
+            && (this.uiState === UIState.NotPlayingTimeout || this.uiState === UIState.DisplayOffTimeout)) {
+            this.logger.sendLog("Player is stopped/paused and UI will already transition to a paused/display off state")
+            return
         }
 
         // actionable state transitions
