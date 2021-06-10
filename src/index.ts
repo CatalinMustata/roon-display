@@ -21,8 +21,12 @@ const logger = new LogService(config.logging.logServiceHost, config.logging.logS
 const controller = new Controller(config.targetZone, config.graphics.enableDithering, config.backlightService, logger)
 controller.setCore(null) // init with no core
 
+let reconnectTimer = null
+
 const roonConnected = (core) => {
     logger.sendLog(`Connected to ${core.display_name} - ${core.display_version}`);
+
+    reconnectTimer && clearInterval(reconnectTimer)
 
     controller.setCore(core)
 }
@@ -53,7 +57,10 @@ function connect() {
     roon.ws_connect({
         host: config.coreIP,
         port: config.corePort,
-        onclose: () => setTimeout(connect, 3000)
+        onclose: () => {
+            // attempt to reconnect every 3s
+            reconnectTimer = setInterval(connect, 3000)
+        }
     })
 }
 
