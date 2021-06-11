@@ -45,7 +45,7 @@ body {
     width: 800px;
     height: 480px;
     background-color: rgb(60, 60, 60);
-    mix-blend-mode: darken;
+    mix-blend-mode: hard-light;
     /* mask: url("../img/noise.svg"); */
     /* -webkit-mask: url("../img/noise.svg"); */
 }
