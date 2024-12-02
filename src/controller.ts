@@ -120,8 +120,6 @@ export default class Controller {
     }
 
     private zonesUpdated(payload) {
-        console.log(JSON.stringify(payload))
-
         const updatedZones = payload.zones || payload.zones_added || payload.zones_changed
         const zoneSeekChange = payload.zones_seek_changed
         if (updatedZones) {
