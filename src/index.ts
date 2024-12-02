@@ -62,6 +62,9 @@ function connect() {
             logger.sendLog("Connection closed")
             // attempt to reconnect every 3s
             reconnectTimer = setInterval(connect, 3000)
+        },
+        onerror: (error) => {
+            logger.sendLog(`Connection error: ${JSON.stringify(error)}`)
         }
     })
 }

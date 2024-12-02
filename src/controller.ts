@@ -120,6 +120,8 @@ export default class Controller {
     }
 
     private zonesUpdated(payload) {
+        console.log(JSON.stringify(payload))
+
         const updatedZones = payload.zones || payload.zones_added || payload.zones_changed
         const zoneSeekChange = payload.zones_seek_changed
         if (updatedZones) {
@@ -132,6 +134,8 @@ export default class Controller {
 
             this.updateZoneInfo(zone)
         } else if (zoneSeekChange) {
+            if (!this.zone) return;
+
             const zone = zoneSeekChange.find(zone => zone.zone_id = this.zone.zone_id)
 
             if (!zone) {
